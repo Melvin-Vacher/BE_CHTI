@@ -42,15 +42,15 @@ DFT_ModuleAuCarre proc
 boucle
 	mul r3, r2, r1 ; p = k*n
 	and r3, #63 ; p mod 64
-	ldrsh r4, [r0,r2,lsl 1] ; x[n] format 4.12
+	ldrsh r4, [r0,r2,lsl #1] ; x[n] format 4.12
 	ldr r6,=TabCos
-	ldrsh r5, [r6, r3, lsl 1] ; cos[p]
+	ldrsh r5, [r6, r3, lsl #1] ; cos[p]
 	asr r5, #3 ; passage du format 1.15 au format 4.12
 	mul r5, r4 ; x[n] * cos(2.pi.k.n/64) au format 8.24
 	add r7, r5 ; partie_relle += res
 	
 	ldr r6, =TabSin
-	ldrsh r5, [r6, r3, lsl 1]
+	ldrsh r5, [r6, r3, lsl #1]
 	asr r5, #3 ; passage du format 1.15 au format 4.12
 	mul r5, r4 ; x[n] * sin(2.pi.k.n/64) au format 8.24
 	add r8, r5 ; partie_imaginaire += res
@@ -66,7 +66,7 @@ boucle
 	mov r0, r1 ; sortie au format 16.16
 	bx lr
 
-	
+	ENDP
 	
 	
 

@@ -53,10 +53,10 @@ ARM Macro Assembler    Page 1
    42 00000010         boucle
    43 00000010 FB02 F301       mul              r3, r2, r1  ; p = k*n
    44 00000014 F003 033F       and              r3, #63     ; p mod 64
-   45 00000018 F930 4012       ldrsh            r4, [r0,r2,lsl 1] 
+   45 00000018 F930 4012       ldrsh            r4, [r0,r2,lsl #1] 
                                                             ; x[n] format 4.12
    46 0000001C 4E0D            ldr              r6,=TabCos
-   47 0000001E F936 5013       ldrsh            r5, [r6, r3, lsl 1] ; cos[p]
+   47 0000001E F936 5013       ldrsh            r5, [r6, r3, lsl #1] ; cos[p]
    48 00000022 EA4F 05E5       asr              r5, #3      ; passage du format
                                                              1.15 au format 4.1
                                                             2
@@ -73,7 +73,7 @@ ARM Macro Assembler    Page 2
                                                             es
    51 0000002C         
    52 0000002C 4E0A            ldr              r6, =TabSin
-   53 0000002E F936 5013       ldrsh            r5, [r6, r3, lsl 1]
+   53 0000002E F936 5013       ldrsh            r5, [r6, r3, lsl #1]
    54 00000032 EA4F 05E5       asr              r5, #3      ; passage du format
                                                              1.15 au format 4.1
                                                             2
@@ -96,7 +96,7 @@ ARM Macro Assembler    Page 2
                                                             16.16
    67 00000052 4770            bx               lr
    68 00000054         
-   69 00000054         
+   69 00000054                 ENDP
    70 00000054         
    71 00000054         
    72 00000054         

@@ -1,9 +1,10 @@
 #include "DriverJeuLaser.h"
 #include "Affichage_Valise.h"
 #define NB_JOUEURS 6
-#define MAX_CPT_CIBLE 200
-#define SEUIL 61624
+#define MAX_CPT_CIBLE 300 //Changement de cible toutes les 1.5 secondes
+#define SEUIL 100
 
+//61624
 
 extern long DFT_ModuleAuCarre(short *,int);
 extern short LeSignal;
@@ -47,10 +48,39 @@ int freq_norm(int nb_joueur) {
 	}
 }
 
+void clear_LED_cibles(void) {
+	Prepare_Clear_LED(LED_Cible_1);
+	Prepare_Clear_LED(LED_Cible_2);
+	Prepare_Clear_LED(LED_Cible_3);
+	Prepare_Clear_LED(LED_Cible_4);
+	Mise_A_Jour_Afficheurs_LED();
+}
+
 void cible_suivante() {
-	num_cible = (num_cible + 1) % 4;
-	// Changer LED
-	Choix_Capteur(num_cible);
+	//num_cible = (num_cible + 1) % 4;
+	char alea_cible = (dma_buf[0] + dma_buf[1]) % 4;
+	if (alea_cible != num_cible) { //On veut changer de cible à chaque fois
+		num_cible = alea_cible;
+	} else {
+		num_cible = (alea_cible + 1) % 4;
+	}
+	
+	Choix_Capteur(num_cible + 1);
+	clear_LED_cibles();
+	switch (num_cible) {
+		case 0:
+			Prepare_Set_LED(LED_Cible_1);
+			break;
+		case 1:
+			Prepare_Set_LED(LED_Cible_2);
+			break;
+		case 2:
+			Prepare_Set_LED(LED_Cible_3);
+			break;
+		default:
+			Prepare_Set_LED(LED_Cible_4);
+	}
+	Mise_A_Jour_Afficheurs_LED();
 	for (int i = 0; i<NB_JOUEURS; i++) {
 		cible_touchee_par_joueur[i] = 0;
 	}
@@ -59,7 +89,7 @@ void cible_suivante() {
 void init_timer_5ms(void) {
 	// Timer 5ms
 	Systick_Period_ff(360000);
-	Systick_Prio_IT((char) 1, fct_DFT);
+	Systick_Prio_IT((char) 9, fct_DFT);
 	SysTick_On;
 	SysTick_Enable_IT ;
 }
@@ -75,6 +105,7 @@ void init_timer_ADC(void) {
 void CallBackSon(void);
 
 void init_son(void) {
+	FinSon = 1;
 	Active_IT_Debordement_Timer(TIM4, 2, CallBackSon);
 	Timer_1234_Init_ff(TIM4, (unsigned int) 6552);
 
@@ -96,6 +127,8 @@ void fct_DFT(void) {
 		if ((puissance_par_joueur[i] > SEUIL) && !(cible_touchee_par_joueur[i])) {
 			cible_touchee_par_joueur[i] = 1; // On enregistre le tir du joueur i
 			scores[i]++; // Le joueur i gagne un point
+			Prepare_Afficheur(i+1, scores[i]);
+			Mise_A_Jour_Afficheurs_LED();
 			StartSon(); // Déclencher le son
 		}
 	}
@@ -114,15 +147,17 @@ int main(void)
 	// ===========================================================================
 
 	// Après exécution : le coeur CPU est clocké à 72MHz ainsi que tous les timers
+	num_cible = 3; //Dernière cible
+	compteur_changement_cible = 0;
+	
+	Init_Affichage();
 	Choix_Capteur(0);
 	CLOCK_Configure();
 	init_timer_5ms();
 	init_timer_ADC();
 	init_son();
-	
 	init_scores();
-	num_cible = 0;
-	compteur_changement_cible = 0;
+	cible_suivante(); //Première cible
 
 //============================================================================	
 	

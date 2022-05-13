@@ -16,7 +16,7 @@
 	extern LongueurSon
 	extern PWM_Set_Value_TIM3_Ch3
 SortieSon dcw 0
-index dcw 0
+index dcd 0
 	export index
 	extern FinSon
 ; ===============================================================================================
@@ -37,13 +37,13 @@ CallBackSon proc
 	
 	push {lr,r4}
 	ldr r0,=index
-	ldrh r3, [r0]
+	ldr r3, [r0]
 	ldr r1,=Son
 	ldr r2,=SortieSon
 	; r4=Son[index]
 	ldrsh r4, [r1,r3,lsl #1]
 	add r3, #1 ;index ++
-	strh r3, [r0]
+	str r3, [r0]
 	
 	; r4=r4*720/2^16+360
 	mov r1, #720 

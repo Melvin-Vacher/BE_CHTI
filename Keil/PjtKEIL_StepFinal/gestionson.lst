@@ -24,17 +24,18 @@ ARM Macro Assembler    Page 1
    17 00000000                 extern           PWM_Set_Value_TIM3_Ch3
    18 00000000 00 00   SortieSon
                                dcw              0
-   19 00000002 00 00   index   dcw              0
-   20 00000004                 export           index
-   21 00000004                 extern           FinSon
-   22 00000004         ; ======================================================
+   19 00000002 00 00 00000000 
+                       index   dcd              0
+   20 00000008                 export           index
+   21 00000008                 extern           FinSon
+   22 00000008         ; ======================================================
                        =========================================
-   23 00000004         
-   24 00000004         
-   25 00000004         
-   26 00000004         
-   27 00000004         ;Section ROM code (read only) :  
-   28 00000004                 area             moncode,code,readonly
+   23 00000008         
+   24 00000008         
+   25 00000008         
+   26 00000008         
+   27 00000008         ;Section ROM code (read only) :  
+   28 00000008                 area             moncode,code,readonly
    29 00000000         ; écrire le code ici 
    30 00000000         
    31 00000000         
@@ -47,13 +48,13 @@ ARM Macro Assembler    Page 1
    37 00000006         
    38 00000006 B510            push             {lr,r4}
    39 00000008 4813            ldr              r0,=index
-   40 0000000A 8803            ldrh             r3, [r0]
+   40 0000000A 6803            ldr              r3, [r0]
    41 0000000C 4913            ldr              r1,=Son
    42 0000000E 4A14            ldr              r2,=SortieSon
    43 00000010         ; r4=Son[index]
    44 00000010 F931 4013       ldrsh            r4, [r1,r3,lsl #1]
    45 00000014 F103 0301       add              r3, #1      ;index ++
-   46 00000018 8003            strh             r3, [r0]
+   46 00000018 6003            str              r3, [r0]
    47 0000001A         
    48 0000001A         ; r4=r4*720/2^16+360
    49 0000001A F44F 7134       mov              r1, #720
@@ -62,13 +63,13 @@ ARM Macro Assembler    Page 1
    52 00000026 F504 74B4       add              r4, #360
    53 0000002A 8014            strh             r4, [r2]
    54 0000002C B401            push             {r0}
-   55 0000002E 4620            mov              r0, r4
 
 
 
 ARM Macro Assembler    Page 2 
 
 
+   55 0000002E 4620            mov              r0, r4
    56 00000030 F7FF FFFE       bl               PWM_Set_Value_TIM3_Ch3
    57 00000034 BC01            pop              {r0}
    58 00000036 E8BD 4010       pop              {lr,r4}
@@ -137,7 +138,7 @@ Symbol: SortieSon
       At line 13 in file Src\GestionSon.s
       At line 42 in file Src\GestionSon.s
 
-index 00000002
+index 00000004
 
 Symbol: index
    Definitions
