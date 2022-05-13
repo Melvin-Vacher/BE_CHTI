@@ -58,7 +58,7 @@ void clear_LED_cibles(void) {
 
 void cible_suivante() {
 	//num_cible = (num_cible + 1) % 4;
-	char alea_cible = (dma_buf[0] + dma_buf[1]) % 4;
+	char alea_cible = (3 * dma_buf[0] + dma_buf[1]) % 4;
 	if (alea_cible != num_cible) { //On veut changer de cible à chaque fois
 		num_cible = alea_cible;
 	} else {
@@ -126,7 +126,11 @@ void fct_DFT(void) {
 		puissance_par_joueur[i] = DFT_ModuleAuCarre(dma_buf,freq_norm(i)); // Calcul de la DFT pour le joueur i
 		if ((puissance_par_joueur[i] > SEUIL) && !(cible_touchee_par_joueur[i])) {
 			cible_touchee_par_joueur[i] = 1; // On enregistre le tir du joueur i
-			scores[i]++; // Le joueur i gagne un point
+			if (compteur_changement_cible < 100) { // Tir durant la première demi seconde
+				scores[i] = scores[i] + 3; // Le joueur i gagne 3 points
+			} else {
+				scores[i]++; // Le joueur i gagne 1 point
+			}
 			Prepare_Afficheur(i+1, scores[i]);
 			Mise_A_Jour_Afficheurs_LED();
 			StartSon(); // Déclencher le son
